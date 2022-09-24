@@ -17,14 +17,14 @@ const App = () => {
           height: '100%',
           width: '100%',
         }}>
-        <ActivityIndicator color="#fed034" size="large" />
+        <ActivityIndicator color="#35d1fd" size="large" />
       </View>
     );
   };
   return (
     <SafeAreaView style={{flex: 1}}>
       <WebView
-        source={{uri: 'https://fritochicken.com/'}}
+        source={{uri: 'https://zooptie.com/'}}
         javaScriptEnabled={true}
         //For the Cache
         domStorageEnabled={true}

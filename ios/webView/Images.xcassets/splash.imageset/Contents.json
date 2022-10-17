@@ -1,18 +1,33 @@
 {
   "images" : [
     {
-      "filename" : "Frito Chicken-01 (4) (1).jpg",
+      "filename" : "Frito__1_-removebg-preview.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Frito Chicken-01 (4) (1)@2x.jpg",
+      "filename" : "Frito__1_-removebg-preview@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Frito Chicken-01 (4) (1)@3x.jpg",
+      "filename" : "Frito__1_-removebg-preview@3x.png",
       "idiom" : "universal",
+      "scale" : "3x"
+    },
+    {
+      "filename" : "Frito Chicken-01 (4) (1).jpg",
+      "idiom" : "iphone",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "Frito Chicken-01 (4) (1)@2x.jpg",
+      "idiom" : "iphone",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "Frito Chicken-01 (4) (1)@3x.jpg",
+      "idiom" : "iphone",
       "scale" : "3x"
     }
   ],

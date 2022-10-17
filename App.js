@@ -1,9 +1,17 @@
-import {View, ActivityIndicator, SafeAreaView} from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  Dimensions,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {WebView} from 'react-native-webview';
 
 const App = () => {
+  StatusBar.setBarStyle('light-content', true);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -22,7 +30,12 @@ const App = () => {
     );
   };
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: '#000',
+      }}>
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
       <WebView
         source={{uri: 'https://fritochicken.com/'}}
         javaScriptEnabled={true}
@@ -32,6 +45,11 @@ const App = () => {
         renderLoading={() => <ActivityIndicatorElement />}
         //Want to show the view or not
         startInLoadingState={true}
+        // style={{
+        //   marginTop: 20,
+        //   width: Dimensions.get('window').width,
+        //   height: Dimensions.get('window').height,
+        // }}
       />
     </SafeAreaView>
   );

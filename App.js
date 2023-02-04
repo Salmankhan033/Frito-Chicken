@@ -25,7 +25,7 @@ const App = () => {
           height: '100%',
           width: '100%',
         }}>
-        <ActivityIndicator color="#fed034" size="large" />
+        <ActivityIndicator color="#36d1fd" size="large" />
       </View>
     );
   };
@@ -37,7 +37,7 @@ const App = () => {
       }}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       <WebView
-        source={{uri: 'https://fritochicken.com/'}}
+        source={{uri: 'www.gethooptie.com/'}}
         javaScriptEnabled={true}
         //For the Cache
         domStorageEnabled={true}

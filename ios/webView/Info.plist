@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Frito Chicken</string>
+	<string>Get Hooptie</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -43,8 +43,6 @@
 	<string>Need access  files </string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Need location access</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for recording videos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save pictures for certain activities.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

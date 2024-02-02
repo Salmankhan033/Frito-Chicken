@@ -8,19 +8,22 @@ import {
   ImageBackground,
   Text,
   StyleSheet,
+  Linking,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useLayoutEffect, useState} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {WebView} from 'react-native-webview';
-
+import RNRestart from 'react-native-restart';
 import NetInfo from '@react-native-community/netinfo';
 import {Colors} from './assets/Colors';
 
 const App = () => {
   const [isConnected, setConnected] = useState(true);
   const [refresh, setRefresh] = useState(false);
-
+  const [onError, setOnError] = useState(false);
+  const [initialLink, setInitialLink] = useState('https://gethooptie.com/');
+  const [isLoading, setIsLoading] = useState(true);
   StatusBar.setBarStyle('light-content', true);
   const webViewRef = useRef(null);
   const onAndroidBackPress = () => {
@@ -32,7 +35,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    SplashScreen.hide();
+    // SplashScreen.hide();
     if (Platform.OS === 'android') {
       BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress);
       return () => {
@@ -43,17 +46,52 @@ const App = () => {
       };
     }
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
+    DeepLinking();
+    let isUnmounted = false;
+    SplashScreen.hide();
+    const timer = setTimeout(() => {
+      if (!isUnmounted) {
+        setConnected(false);
+      }
+    }, 5000);
     const netInfroSubscribe = NetInfo.addEventListener(state => {
-      setConnected(state.isConnected);
-      // if (!state.isConnected) {
-      //   alert('No connection');
-      // }
+      clearTimeout(timer);
+      if (!isUnmounted) {
+        if (state.isConnected && state.isInternetReachable) {
+          setConnected(true);
+        } else if (state.isConnected && state.isInternetReachable == null) {
+          setConnected(true);
+        } else {
+          setConnected(false);
+        }
+      }
     });
-    return netInfroSubscribe;
+
+    return () => {
+      isUnmounted = true;
+      netInfroSubscribe();
+      clearTimeout(timer);
+    };
   }, [refresh]);
+  const DeepLinking = () => {
+    Linking.addEventListener('url', event => {
+      Linking.canOpenURL(event.url).then(supported => {
+        setInitialLink(event.url);
+      });
+    });
+    //
+    Linking.getInitialURL()
+      .then(url => {
+        if (url) {
+          Linking.canOpenURL(url).then(supported => {
+            setInitialLink(url);
+          });
+        }
+      })
+      .catch(e => console.log('linkerrrr', e));
+  };
   const ActivityIndicatorElement = () => {
-    //making a view to show to while loading the webpage
     return (
       <View
         style={{
@@ -66,6 +104,66 @@ const App = () => {
       </View>
     );
   };
+  const onRestart = () => {
+    RNRestart.Restart();
+    setRefresh(!refresh);
+    setOnError(!onError);
+  };
+  const NoInternet = () => {
+    return (
+      <View style={styles.noNetView}>
+        <ImageBackground
+          imageStyle={styles.iconBg}
+          source={require('./assets/no_internet.png')}
+          style={styles.imageStye}>
+          <View style={styles.noConnectView}>
+            <View style={styles.noConnectTextView}>
+              <Text style={styles.noConnectText}>Ooops!</Text>
+              <Text style={styles.noConnectSimpleText}>
+                No internet connection found.
+              </Text>
+              <Text style={styles.noConnectSimpleText}>
+                Check your connection and try again
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.btnStyle}
+              onPress={() => onRestart()}>
+              <Text style={styles.btnText}>Try again</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  };
+  const OnError = () => {
+    return (
+      <View style={styles.noNetView}>
+        <ImageBackground
+          imageStyle={styles.iconBg}
+          source={require('./assets/no_internet.png')}
+          style={styles.imageStye}>
+          <View style={styles.noConnectView}>
+            <View style={styles.noConnectTextView}>
+              <Text style={styles.noConnectText}>Ooops!</Text>
+              <Text style={styles.noConnectSimpleText}>
+                {`There was a problem`}
+              </Text>
+              <Text style={styles.noConnectSimpleText}>
+                {`Please contact us.`}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.btnStyle}
+              onPress={() => onRestart()}>
+              <Text style={styles.btnText}>Try again</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{flex: 0, backgroundColor: Colors.App_Color}} />
@@ -74,50 +172,28 @@ const App = () => {
           barStyle={isConnected ? 'light-content' : 'dark-content'}
           backgroundColor={isConnected ? Colors.App_Color : Colors.white}
         />
-        {!isConnected && (
-          <View style={styles.noNetView}>
-            <ImageBackground
-              imageStyle={styles.iconBg}
-              source={require('./assets/no_internet.png')}
-              style={styles.imageStye}>
-              <View style={styles.noConnectView}>
-                <View style={styles.noConnectTextView}>
-                  <Text style={styles.noConnectText}>Ooops!</Text>
-                  <Text style={styles.noConnectSimpleText}>
-                    No internet connection found.
-                  </Text>
-                  <Text style={styles.noConnectSimpleText}>
-                    Check your connection and try again
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.btnStyle}
-                  onPress={() => setRefresh(!refresh)}>
-                  <Text style={styles.btnText}>Try again</Text>
-                </TouchableOpacity>
-              </View>
-            </ImageBackground>
-          </View>
-        )}
-        {isConnected && (
+        {isLoading && <ActivityIndicatorElement />}
+        {onError ? (
+          <OnError />
+        ) : !isConnected ? (
+          <NoInternet />
+        ) : (
           <WebView
-            // source={{uri: 'https://app.socar.dev/'}}
-            source={{uri: 'https://gethooptie.com/'}}
+            source={{uri: initialLink}}
             javaScriptEnabled={true}
             ref={webViewRef}
             mediaPlaybackRequiresUserAction={false}
-            //For the Cache
+            onContentProcessDidTerminate={() => webViewRef.current.reload()}
             domStorageEnabled={true}
-            //View to show while loading the webpage
             renderLoading={() => <ActivityIndicatorElement />}
-            //Want to show the view or not
-            startInLoadingState={true}
             geolocationEnabled={true}
             scalesPageToFit
             allowsInlineMediaPlayback={true}
             javaScriptEnabledAndroid={true}
             allowFileAccess={true}
             originWhitelist={['*']}
+            onError={() => setOnError(true)}
+            onLoad={() => setIsLoading(false)}
           />
         )}
       </SafeAreaView>
